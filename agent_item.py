@@ -279,5 +279,5 @@ def process_items(batch_size: int = 5, max_items: int = 5):
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
     logging.info("Starting processing")
-    process_items(batch_size=1000, max_items=1000)  # Process up to 5 items total
+    process_items(batch_size=5, max_items=5)  # Process up to 5 items total
     logging.info("Processing complete")
