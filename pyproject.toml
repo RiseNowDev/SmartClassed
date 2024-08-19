@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "autoclassed"
+version = "0.1.0"
+description = ""
+authors = ["Trav <travis.vas@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+openai = "^1.40.6"
+langchain = "^0.2.13"
+langchain-community = "^0.2.12"
+langchain-openai = "^0.1.21"
+streamlit = "^1.37.1"
+pandas = ">=1.5.3,<2.0.0"
+pandasai = ">=2.2.14,<3.0.0"
+pygwalker = "^0.4.9.4"
+python-dotenv = "^1.0.1"
+pytest-mock = "^3.14.0"
+langchain-core = "^0.2.32"
+matplotlib = "^3.9.2"
+jupyter = "^1.0.0"
+
+
+[tool.poetry.group.dev.dependencies]
+ipykernel = "^6.29.5"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
