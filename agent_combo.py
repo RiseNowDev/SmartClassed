@@ -1,5 +1,6 @@
 import os
-import sqlite3
+import psycopg2
+from psycopg2.extras import DictCursor
 from typing import List, Optional
 from datetime import datetime
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
@@ -136,9 +137,9 @@ def get_items_to_process(cursor, batch_size: int) -> List[tuple]:
     """
     query = """
     SELECT id, supplier_name, item_code
-    FROM main.sups_item
+    FROM supplier_items
     WHERE classification_code IS NULL OR classification_code = ''
-    LIMIT ?
+    LIMIT %s
     """
     cursor.execute(query, (batch_size,))
     return cursor.fetchall()
@@ -150,17 +151,17 @@ def update_item_info(conn, item_id: int, combined_data: CombinedData):
     Args:
         conn: The database connection.
         item_id (int): The ID of the item to update.
-        sups_item (CombinedData): An instance of CombinedData containing the updated data.
+        combined_data (CombinedData): An instance of CombinedData containing the updated data.
     """
     global total_affected
     cursor = conn.cursor()
     try:
         cursor.execute(
             """
-            UPDATE main.sups_item
-            SET classification_code = ?, classification_name = ?, 
-                website = ?, comments = ?, valid = ?
-            WHERE id = ?
+            UPDATE supplier_items
+            SET classification_code = %s, classification_name = %s, 
+                website = %s, comments = %s, valid = %s
+            WHERE id = %s
             """,
             (
                 combined_data.classification_code,
@@ -215,7 +216,7 @@ def insert_run_stats(conn, run_start: datetime, run_end: datetime):
         cursor.execute(
             """
             INSERT INTO run_stats (run_start, run_end, server_count, openai_count, total_affected)
-            VALUES (?, ?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s, %s)
             """,
             (run_start, run_end, server_count, openai_count, total_affected)
         )
@@ -234,8 +235,15 @@ def process_items(batch_size: int = 100):
     """
     global server_count, openai_count, total_affected
     
-    conn = sqlite3.connect("spend_intake2.db", check_same_thread=False)
-    cursor = conn.cursor()
+    conn = psycopg2.connect(
+        host="localhost",
+        port=5432,
+        database="ars_spend_class",
+        user="overlord",
+        password="password"
+    )
+    conn.set_session(autocommit=False)
+    cursor = conn.cursor(cursor_factory=DictCursor)
 
     run_start = datetime.now()
 
@@ -261,6 +269,7 @@ def process_items(batch_size: int = 100):
     finally:
         run_end = datetime.now()
         insert_run_stats(conn, run_start, run_end)
+        cursor.close()
         conn.close()
 
     logging.info(f"Run completed. Server count: {server_count}, OpenAI count: {openai_count}, Total affected: {total_affected}")
