@@ -36,7 +36,7 @@ class CombinedData(BaseModel):
     """
 
     supplier_name: str = Field(description="The name of the supplier organization")
-    item_code: Optional[str] = Field(description="The unique code of the item (if available)")
+    item_code: Optional[str] = Field(description="The item description that is sold by the supplier")
     classification_code: str = Field(description="The UNSPSC classification code")
     classification_name: str = Field(description="The UNSPSC classification name")
     website: str = Field(description="The website of the supplier or related to the item")
@@ -61,20 +61,22 @@ parser = PydanticOutputParser(pydantic_object=CombinedData)
 prompt = ChatPromptTemplate.from_messages([
     (
         "system",
-        "You are an AI assistant tasked with gathering information about supplier companies and their items.",
+        "You are an AI assistant tasked with gathering and accurately classifying information about supplier companies and their items.",
     ),
-    ("human", "I need information about the supplier: {supplier_name} and the item code: {item_code}"),
+    ("human", 
+     "I need detailed information about the supplier: {supplier_name} and the item code: {item_code}. "
+     "Please ensure that the classification is as accurate as possible."),
     (
         "system",
-        "Certainly! I'll use the available tools to search for information about the supplier {supplier_name} "
-        "and the item with code {item_code}. Please provide only factual information that you can verify. "
-        "If you cannot find specific information, leave the field empty or set it to None. "
-        "Do not generate or guess any information. Provide the following details:\n"
-        "1. The UNSPSC classification code\n"
-        "2. The UNSPSC classification name\n"
-        "3. The website of the supplier or related to the item\n"
-        "4. Any additional relevant comments\n"
-        "5. Validation of whether it's a valid supplier-item combination\n\n"
+        "Certainly! I'll use available tools and references, including similar industry items and suppliers, "
+        "to search for information about the supplier {supplier_name} and the item with code {item_code}. "
+        "Please provide only factual information that you can verify. If you cannot find exact information, "
+        "use the closest possible classification based on similar items. Do not generate random guesses. "
+        "Provide the following details:\n"
+        "1. The UNSPSC classification code and name (inferred if not directly available)\n"
+        "2. The website of the supplier or related to the item\n"
+        "3. Any additional relevant comments\n"
+        "4. Validation of whether it's a valid supplier-item combination\n\n"
         "Format the information as follows:\n"
         "{format_instructions}",
     ),
@@ -138,7 +140,7 @@ def get_items_to_process(cursor, batch_size: int) -> List[tuple]:
     query = """
     SELECT id, supplier_name, item_code
     FROM supplier_items
-    WHERE classification_code IS NULL OR classification_code = ''
+    WHERE classification_code IS NULL AND lookup IS NULL AND spend::numeric > 1000
     LIMIT %s
     """
     cursor.execute(query, (batch_size,))
@@ -215,7 +217,7 @@ def insert_run_stats(conn, run_start: datetime, run_end: datetime):
     try:
         cursor.execute(
             """
-            INSERT INTO run_stats (run_start, run_end, server_count, openai_count, total_affected)
+            INSERT INTO run_stats (run_start, run_end, serper_count, openai_count, total_affected)
             VALUES (%s, %s, %s, %s, %s)
             """,
             (run_start, run_end, server_count, openai_count, total_affected)
@@ -276,4 +278,4 @@ def process_items(batch_size: int = 100):
 
 # Example usage
 if __name__ == "__main__":
-    process_items(batch_size=5)  # Process 100 items at a time
+    process_items(batch_size=100000)  # Process 100 items at a time

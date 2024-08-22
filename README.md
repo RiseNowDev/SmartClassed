@@ -1,90 +1,111 @@
-# Creating an Assistant with GPT and Custom Functions
+# AutoClassed: Automated Supplier and Item Classification System
 
 ## Introduction
 
-Welcome to this Jupyter Notebook! In this project, we will guide you through the process of creating an intelligent
-assistant using the GPT architecture. Leveraging the power of GPT, our assistant will be capable of understanding and
-generating human-like text, making it a versatile tool for various applications.
+AutoClassed is an intelligent system designed to automatically classify suppliers and items in a procurement database. It uses advanced AI and web search capabilities to gather information, assign classification codes, and update your database with minimal human intervention.
 
-### Objectives
+## Features
 
-1. **Understand GPT Architecture:** Gain insights into the working principles of GPT (Generative Pre-trained
-   Transformer) and how it processes natural language.
-2. **Setup and Initialization:** Learn how to set up the necessary environment and initialize the GPT model.
-3. **Creating Custom Functions:** Develop custom functions to extend the assistant's capabilities, making it more
-   interactive and functional.
-4. **Integration and Testing:** Integrate the functions with the GPT model and test the assistant to ensure it performs
-   as expected.
+- Automated classification of suppliers and items
+- Integration with OpenAI's GPT model for intelligent processing
+- Web search functionality using Google Serper API
+- Concurrent processing for improved efficiency
+- Compatible with SQLite and PostgreSQL databases
 
-### What You Will Learn
+## Prerequisites
 
-- **Natural Language Processing (NLP):** Basic concepts and the significance of embeddings in understanding text.
-- **Model Initialization:** How to load and initialize a pre-trained GPT model.
-- **Function Creation:** Techniques to write custom functions that enhance the assistant's functionality.
-- **Practical Applications:** Real-world examples and use cases where such an assistant can be beneficial.
+Before you begin, ensure you have the following:
 
-### Prerequisites
+1. A computer with internet access
+2. Python 3.11 or higher installed (if you don't have it, download it from [python.org](https://www.python.org/downloads/))
+3. Access to your procurement database (SQLite or PostgreSQL)
+4. API keys for OpenAI and Google Serper (instructions for obtaining these are provided below)
 
-- **Basic Python Knowledge:** Familiarity with Python programming is essential.
-- **Understanding of NLP:** A basic understanding of Natural Language Processing will be helpful.
-- **Jupyter Notebook:** Basic knowledge of navigating and executing code in Jupyter Notebook.
+## Installation
 
-### Tools and Libraries
+1. Open your computer's terminal or command prompt.
 
-- **OpenAI's GPT:** We will use OpenAI's GPT model as the core of our assistant.
-- **Python Libraries:** Essential libraries such as `numpy`, `pandas`, and `requests` for various functionalities.
+2. Clone the repository by typing:
+   ```
+   git clone https://github.com/your-username/autoclassed.git
+   ```
 
-By the end of this notebook, you will have a functional assistant powered by GPT, enhanced with custom functions
-tailored to specific needs. Let's dive in and start building our intelligent assistant!
+3. Navigate to the project directory:
+   ```
+   cd autoclassed
+   ```
 
----
-# Supplier Information Gathering and Update System
+4. Install the required dependencies:
+   ```
+   pip install -r requirements.txt
+   ```
 
-## Overview
+## Configuration
 
-This system is designed to gather and update information about supplier companies in a database. Its main purpose is to process a list of suppliers that don't have classification information and use AI and web search tools to find and add that missing data.
+1. Create a file named `.env` in the project directory.
 
-## Input
+2. Add your API keys to the `.env` file:
+   ```
+   OPENAI_API_KEY=your_openai_api_key_here
+   SERPER_API_KEY=your_serper_api_key_here
+   ```
 
-- A list of supplier names from a SQLite database
-- Access to a SQLite database file named "spend_intake2.db"
-- API keys for OpenAI and Google Serper stored in environment variables
+3. If you're using a PostgreSQL database, add your database credentials to the `.env` file:
+   ```
+   DB_HOST=your_database_host
+   DB_PORT=your_database_port
+   DB_NAME=your_database_name
+   DB_USER=your_database_username
+   DB_PASSWORD=your_database_password
+   ```
 
-## Output
+## Usage
 
-Updated supplier information in the database, including:
-- Validity of the supplier
-- Classification code and name
-- Website
-- Additional comments
+1. To process suppliers:
+   ```
+   python agent_company.py
+   ```
 
-## Main Steps
+2. To process items:
+   ```
+   python agent_item.py
+   ```
 
-1. Set up tools for AI processing and web searching using the OpenAI API and Google Serper API
-2. Define a template for AI queries about supplier information
-3. Create a function to process each company name using AI and search tools
-4. Retrieve a list of suppliers from the database that need classification information
-5. Process each supplier in parallel using multiple threads
-6. Search for information, format results, and update the database for each supplier
+3. To process both suppliers and items:
+   ```
+   python agent_combo.py
+   ```
 
-## Key Components
+4. To view the results in a web interface:
+   ```
+   streamlit run main.py
+   ```
+   Then open your web browser and go to the URL displayed in the terminal (usually http://localhost:8501).
 
-### process_suppliers Function
-- Gets a batch of suppliers from the database
-- Uses a thread pool to process multiple suppliers concurrently
+## Obtaining API Keys
 
-### process_single_supplier Function
-- Calls process_company_name to get information
-- Calls update_supplier_info to save data to the database
+### OpenAI API Key
+1. Go to [OpenAI's website](https://openai.com/)
+2. Sign up or log in
+3. Navigate to the API section
+4. Generate a new API key
 
-### process_company_name Function
-- Transforms a company name string into a structured GetSupplierData object
+### Google Serper API Key
+1. Visit [Serper.dev](https://serper.dev/)
+2. Sign up for an account
+3. Navigate to the API Keys section
+4. Generate a new API key
 
-## Error Handling and Reporting
+## Troubleshooting
 
-- Ensures that failure in processing one supplier doesn't stop the entire batch
-- Tracks and reports the number of successfully processed suppliers
+If you encounter any issues:
+1. Ensure all prerequisites are met
+2. Check that your API keys are correctly entered in the `.env` file
+3. Verify your database connection details
+4. If problems persist, please open an issue on our GitHub repository
 
-## Summary
+## Support
 
-This system automates the process of enriching a supplier database with additional information, leveraging AI and web search capabilities to fill in missing details about each supplier.search capabilities to fill in missing details about each supplier.
+For additional help or questions, please open an issue on our GitHub repository or contact our support team at support@autoclassed.com.
+
+Thank you for using AutoClassed! We hope this tool significantly improves your procurement data management process.
