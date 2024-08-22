@@ -106,6 +106,6 @@ If you encounter any issues:
 
 ## Support
 
-For additional help or questions, please open an issue on our GitHub repository or contact our support team at support@autoclassed.com.
+For additional help or questions, please open an issue on the GitHub repository.
 
 Thank you for using AutoClassed! We hope this tool significantly improves your procurement data management process.
