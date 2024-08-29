@@ -20,7 +20,6 @@ pytest-mock = "^3.14.0"
 langchain-core = "^0.2.32"
 matplotlib = "^3.9.2"
 jupyter = "^1.0.0"
-psycopg2 = "^2.9.9"
 
 
 [tool.poetry.group.dev.dependencies]
